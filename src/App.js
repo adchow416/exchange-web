@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="App">
       <p>
-        Currency Converter
+        Currency Converter Setup
       </p>
       <header className="App-header">
         <i>Conversion component goes here</i>
