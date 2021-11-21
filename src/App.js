@@ -6,20 +6,52 @@ import Col from 'react-bootstrap/Col'
 import { Form } from "react-bootstrap";
 
 function App() {
+  const currentHost = 'http://localhost:8000'
   const [userCurrency, setUserCurrency] = useState(0)
   const [convertedCurrency, setConvertedCurrency] = useState(0)
   const [userCurrencyType, setUserCurrencyType] = useState("")
   const [convertedCurrencyType, setConvertedCurrencyType] = useState("")
-  const currencyTypeOptions = [
-    "",
-    "US",
-    "CAN"
-  ]
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [currencyTypeOptions, setCurrencyTypeOptions] = useState([])
+
+  useEffect(() => {
+    setIsLoading(true);
+    setHasError(false);
+    fetch(`${currentHost}/currency_options`)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          result.unshift("")
+          setCurrencyTypeOptions(result)
+          setIsLoading(false);
+        },
+        () => {
+          setIsLoading(false);
+          setHasError(true);
+        }
+      )
+  }, []);
 
   function handleClick() {
-    console.log(userCurrency)
-    console.log(userCurrencyType)
-    console.log(convertedCurrencyType)
+    setIsLoading(true);
+    setHasError(false);
+    let fetchString =`${currentHost}/convert_currency`
+    fetchString = `${fetchString}?userCurrency=${userCurrency}`
+    fetchString = `${fetchString}&userCurrencyType=${userCurrencyType}`
+    fetchString = `${fetchString}&convertedCurrencyType=${convertedCurrencyType}`
+    fetch(fetchString)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          setConvertedCurrency(result)
+          setIsLoading(false);
+        },
+        () => {
+          setIsLoading(false);
+          setHasError(true);
+        }
+      )
     setConvertedCurrency(1)
   }
 
@@ -30,6 +62,24 @@ function App() {
       </p>
       <header className="App-header">
         <Container>
+        {hasError ? (
+            <Row>
+              <Col>
+                <label>
+                  There was an error
+                </label>
+              </Col>
+            </Row>
+          ) : null}
+          {isLoading ? (
+            <Row>
+              <Col>
+                <label>
+                  Loading...
+                </label>
+              </Col>
+            </Row>
+          ) : null}
           <Row>
             <Col>
               <label>
@@ -42,7 +92,7 @@ function App() {
                 value={userCurrencyType}
                 onChange={e => setUserCurrencyType(e.target.value)}
               >
-                {currencyTypeOptions.map((opt) =>{
+                {currencyTypeOptions.map((opt) => {
                   return <option key={opt} value={opt}>{opt}</option>
                 })}
               </Form.Control>
@@ -60,7 +110,7 @@ function App() {
               />
             </Col>
           </Row>
-          <br/>
+          <br />
           <Row>
             <Col>
               <label>
@@ -73,7 +123,7 @@ function App() {
                 value={convertedCurrencyType}
                 onChange={e => setConvertedCurrencyType(e.target.value)}
               >
-                {currencyTypeOptions.map((opt) =>{
+                {currencyTypeOptions.map((opt) => {
                   return <option key={opt} value={opt}>{opt}</option>
                 })}
               </Form.Control>
@@ -91,7 +141,7 @@ function App() {
               </button>
             </Col>
           </Row>
-          <br/>
+          <br />
           <Row>
             <Col>
               <label id="convertedCurrencyDisplay">
