@@ -36,7 +36,7 @@ function App() {
   function handleClick() {
     setIsLoading(true);
     setHasError(false);
-    let fetchString =`${currentHost}/convert_currency`
+    let fetchString = `${currentHost}/convert_currency`
     fetchString = `${fetchString}?userCurrency=${userCurrency}`
     fetchString = `${fetchString}&userCurrencyType=${userCurrencyType}`
     fetchString = `${fetchString}&convertedCurrencyType=${convertedCurrencyType}`
@@ -62,7 +62,15 @@ function App() {
       </p>
       <header className="App-header">
         <Container>
-        {hasError ? (
+          <Row>
+            <Col>
+              <label>
+                <a href="https://www.exchangerate-api.com">Rates By Exchange Rate API</a>
+              </label>
+            </Col>
+          </Row>
+          <br />
+          {hasError ? (
             <Row>
               <Col>
                 <label>
@@ -82,20 +90,13 @@ function App() {
           ) : null}
           <Row>
             <Col>
-              <label>
-                Select User Currency Type:
-              </label>
-              <br />
-              <Form.Control
-                id="userCurrencyTypeSelect"
-                as="select"
+              <ExchangeRateCodesSelect
+                label="Select User Currency Type:"
+                selectID="userCurrencyTypeSelect"
+                currencyTypeOptions={currencyTypeOptions}
                 value={userCurrencyType}
-                onChange={e => setUserCurrencyType(e.target.value)}
-              >
-                {currencyTypeOptions.map((opt) => {
-                  return <option key={opt} value={opt}>{opt}</option>
-                })}
-              </Form.Control>
+                setCurrencyType={setUserCurrencyType}
+              />
             </Col>
             <Col>
               <label>
@@ -113,20 +114,13 @@ function App() {
           <br />
           <Row>
             <Col>
-              <label>
-                Select Currency Type To Convert to:
-              </label>
-              <br />
-              <Form.Control
-                id="convertedCurrencyTypeSelect"
-                as="select"
+              <ExchangeRateCodesSelect
+                label="Select Currency Type To Convert to::"
+                selectID="convertedCurrencyTypeSelect"
+                currencyTypeOptions={currencyTypeOptions}
                 value={convertedCurrencyType}
-                onChange={e => setConvertedCurrencyType(e.target.value)}
-              >
-                {currencyTypeOptions.map((opt) => {
-                  return <option key={opt} value={opt}>{opt}</option>
-                })}
-              </Form.Control>
+                setCurrencyType={setConvertedCurrencyType}
+              />
             </Col>
             <Col>
               <label>
@@ -153,6 +147,28 @@ function App() {
       </header>
     </div>
   );
+}
+
+function ExchangeRateCodesSelect(props) {
+  return (
+    <div>
+      <label>
+        {props.label}
+      </label>
+      <br />
+      <Form.Control
+        id={props.selectID}
+        as="select"
+        value={props.value}
+        onChange={e => props.setCurrencyType(e.target.value)}
+      >
+        {props.currencyTypeOptions.map((opt) => {
+          return <option key={`${props.selectID}${opt}`} value={opt}>{opt}</option>
+        })}
+      </Form.Control>
+    </div>
+
+  )
 }
 
 export default App;
