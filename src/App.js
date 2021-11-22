@@ -22,8 +22,12 @@ function App() {
       .then(res => res.json())
       .then(
         (result) => {
-          result.unshift("")
-          setCurrencyTypeOptions(result)
+          if (Array.isArray(result)) {
+            result.unshift("")
+            setCurrencyTypeOptions(result)
+          } else {
+            setHasError(true);
+          }
           setIsLoading(false);
         },
         () => {
